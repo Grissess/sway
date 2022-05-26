@@ -586,16 +586,20 @@ static void update_title_texture(struct sway_container *con,
 }
 
 void container_update_title_textures(struct sway_container *container) {
+	struct view_state_border_colors *view_colors = container->view ?
+		view_get_color_states(container->view) :
+		&config->border_colors;
+
 	update_title_texture(container, &container->title_focused,
-			&config->border_colors.focused);
+			&view_colors->focused);
 	update_title_texture(container, &container->title_focused_inactive,
-			&config->border_colors.focused_inactive);
+			&view_colors->focused_inactive);
 	update_title_texture(container, &container->title_unfocused,
-			&config->border_colors.unfocused);
+			&view_colors->unfocused);
 	update_title_texture(container, &container->title_urgent,
-			&config->border_colors.urgent);
+			&view_colors->urgent);
 	update_title_texture(container, &container->title_focused_tab_title,
-			&config->border_colors.focused_tab_title);
+			&view_colors->focused_tab_title);
 	container_damage_whole(container);
 }
 

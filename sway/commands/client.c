@@ -3,6 +3,7 @@
 #include "sway/config.h"
 #include "sway/output.h"
 #include "sway/tree/container.h"
+#include "sway/tree/view.h"
 #include "util.h"
 
 static void rebuild_textures_iterator(struct sway_container *con, void *data) {
@@ -95,4 +96,57 @@ struct cmd_results *cmd_client_focused_tab_title(int argc, char **argv) {
 		config->has_focused_tab_title = true;
 	}
 	return result;
+}
+
+#define GET_VIEW ({ \
+		struct sway_container *container = config->handler_context.container; \
+		if(!container || !container->view) { \
+			return cmd_results_new(CMD_INVALID, \
+					"Only views can have custom colors"); \
+		} \
+		container->view; \
+})
+
+struct cmd_results *cmd_custom_focused(int argc, char **argv) {
+	struct sway_view *view = GET_VIEW;
+	view_set_custom_colors(view, true);
+	return handle_command(argc, argv, "custom.focused",
+			&view->custom_colors.focused, "#2e92f4ff");
+}
+
+struct cmd_results *cmd_custom_focused_inactive(int argc, char **argv) {
+	struct sway_view *view = GET_VIEW;
+	view_set_custom_colors(view, true);
+	return handle_command(argc, argv, "custom.focused_inactive",
+			&view->custom_colors.focused_inactive, "#484e50ff");
+}
+
+struct cmd_results *cmd_custom_unfocused(int argc, char **argv) {
+	struct sway_view *view = GET_VIEW;
+	view_set_custom_colors(view, true);
+	return handle_command(argc, argv, "custom.unfocused",
+			&view->custom_colors.focused_inactive, "#292d2eff");
+}
+
+struct cmd_results *cmd_custom_urgent(int argc, char **argv) {
+	struct sway_view *view = GET_VIEW;
+	view_set_custom_colors(view, true);
+	return handle_command(argc, argv, "custom.urgent",
+			&view->custom_colors.urgent, "#900000ff");
+}
+
+struct cmd_results *cmd_default_colors(int argc, char **argv) {
+	struct sway_view *view = GET_VIEW;
+	view_set_custom_colors(view, false);
+
+	if (config->active) {
+		root_for_each_container(rebuild_textures_iterator, NULL);
+
+		for (int i = 0; i < root->outputs->length; ++i) {
+			struct sway_output *output = root->outputs->items[i];
+			output_damage_whole(output);
+		}
+	}
+
+	return cmd_results_new(CMD_SUCCESS, NULL);
 }

@@ -87,6 +87,9 @@ struct sway_view {
 	bool allow_request_urgent;
 	struct wl_event_source *urgent_timer;
 
+	bool has_custom_colors;
+	struct view_state_border_colors custom_colors;
+
 	struct wl_list saved_buffers; // sway_saved_buffer::link
 
 	// The geometry for whatever the client is committing, regardless of
@@ -243,6 +246,10 @@ const char *view_get_shell(struct sway_view *view);
 
 void view_get_constraints(struct sway_view *view, double *min_width,
 		double *max_width, double *min_height, double *max_height);
+
+struct view_state_border_colors *view_get_color_states(struct sway_view *view);
+
+void view_set_custom_colors(struct sway_view *view, bool enable);
 
 uint32_t view_configure(struct sway_view *view, double lx, double ly, int width,
 	int height);

@@ -728,21 +728,23 @@ static void render_containers_linear(struct sway_output *output,
 			struct wlr_texture *title_texture;
 			struct wlr_texture *marks_texture;
 			struct sway_container_state *state = &child->current;
+			struct view_state_border_colors *view_colors =
+				view_get_color_states(view);
 
 			if (view_is_urgent(view)) {
-				colors = &config->border_colors.urgent;
+				colors = &view_colors->urgent;
 				title_texture = child->title_urgent;
 				marks_texture = child->marks_urgent;
 			} else if (state->focused || parent->focused) {
-				colors = &config->border_colors.focused;
+				colors = &view_colors->focused;
 				title_texture = child->title_focused;
 				marks_texture = child->marks_focused;
 			} else if (child == parent->active_child) {
-				colors = &config->border_colors.focused_inactive;
+				colors = &view_colors->focused_inactive;
 				title_texture = child->title_focused_inactive;
 				marks_texture = child->marks_focused_inactive;
 			} else {
-				colors = &config->border_colors.unfocused;
+				colors = &view_colors->unfocused;
 				title_texture = child->title_unfocused;
 				marks_texture = child->marks_unfocused;
 			}
@@ -792,25 +794,27 @@ static void render_containers_tabbed(struct sway_output *output,
 		struct wlr_texture *marks_texture;
 		bool urgent = view ?
 			view_is_urgent(view) : container_has_urgent_child(child);
+		struct view_state_border_colors *view_colors =
+			view_get_color_states(view);
 
 		if (urgent) {
-			colors = &config->border_colors.urgent;
+			colors = &view_colors->urgent;
 			title_texture = child->title_urgent;
 			marks_texture = child->marks_urgent;
 		} else if (cstate->focused || parent->focused) {
-			colors = &config->border_colors.focused;
+			colors = &view_colors->focused;
 			title_texture = child->title_focused;
 			marks_texture = child->marks_focused;
 		} else if (config->has_focused_tab_title && container_has_focused_child(child)) {
-			colors = &config->border_colors.focused_tab_title;
+			colors = &view_colors->focused_tab_title;
 			title_texture = child->title_focused_tab_title;
 			marks_texture = child->marks_focused_tab_title;
 		} else if (child == parent->active_child) {
-			colors = &config->border_colors.focused_inactive;
+			colors = &view_colors->focused_inactive;
 			title_texture = child->title_focused_inactive;
 			marks_texture = child->marks_focused_inactive;
 		} else {
-			colors = &config->border_colors.unfocused;
+			colors = &view_colors->unfocused;
 			title_texture = child->title_unfocused;
 			marks_texture = child->marks_unfocused;
 		}
@@ -861,25 +865,27 @@ static void render_containers_stacked(struct sway_output *output,
 		struct wlr_texture *marks_texture;
 		bool urgent = view ?
 			view_is_urgent(view) : container_has_urgent_child(child);
+		struct view_state_border_colors *view_colors =
+			view_get_color_states(view);
 
 		if (urgent) {
-			colors = &config->border_colors.urgent;
+			colors = &view_colors->urgent;
 			title_texture = child->title_urgent;
 			marks_texture = child->marks_urgent;
 		} else if (cstate->focused || parent->focused) {
-			colors = &config->border_colors.focused;
+			colors = &view_colors->focused;
 			title_texture = child->title_focused;
 			marks_texture = child->marks_focused;
 		} else if (config->has_focused_tab_title && container_has_focused_child(child)) {
-			colors = &config->border_colors.focused_tab_title;
+			colors = &view_colors->focused_tab_title;
 			title_texture = child->title_focused_tab_title;
 			marks_texture = child->marks_focused_tab_title;
 		 } else if (child == parent->active_child) {
-			colors = &config->border_colors.focused_inactive;
+			colors = &view_colors->focused_inactive;
 			title_texture = child->title_focused_inactive;
 			marks_texture = child->marks_focused_inactive;
 		} else {
-			colors = &config->border_colors.unfocused;
+			colors = &view_colors->unfocused;
 			title_texture = child->title_unfocused;
 			marks_texture = child->marks_unfocused;
 		}
@@ -968,17 +974,19 @@ static void render_floating_container(struct sway_output *soutput,
 		struct border_colors *colors;
 		struct wlr_texture *title_texture;
 		struct wlr_texture *marks_texture;
+		struct view_state_border_colors *view_colors =
+			view_get_color_states(view);
 
 		if (view_is_urgent(view)) {
-			colors = &config->border_colors.urgent;
+			colors = &view_colors->urgent;
 			title_texture = con->title_urgent;
 			marks_texture = con->marks_urgent;
 		} else if (con->current.focused) {
-			colors = &config->border_colors.focused;
+			colors = &view_colors->focused;
 			title_texture = con->title_focused;
 			marks_texture = con->marks_focused;
 		} else {
-			colors = &config->border_colors.unfocused;
+			colors = &view_colors->unfocused;
 			title_texture = con->title_unfocused;
 			marks_texture = con->marks_unfocused;
 		}

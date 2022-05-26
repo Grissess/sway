@@ -592,8 +592,20 @@ The default colors are:
 :  #0c0c0c
 
 
+*custom.<class>* <border> <background> <text> [<indicator> [<child_border>]]
+	As *client.<class>*, but only affects the current view. This is typically
+	used to assign a custom color to a certain class of windows via
+	*for_window*.
+
+	The *focused_tab_title* class is not supported.
+
 *default_border* normal|none|pixel [<n>]
 	Set default border style for new tiled windows.
+
+*default_colors*
+	Reset a window to its default colors (undoing the effect of any
+	*custom.<class>*-assigned colors). This can be used with *for_window* to add
+	exceptions to custom coloring rules.
 
 *default_floating_border* normal|none|pixel [<n>]
 	Set default border style for new floating windows. This only applies to

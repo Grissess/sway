@@ -42,6 +42,8 @@ void view_init(struct sway_view *view, enum sway_view_type type,
 	view->allow_request_urgent = true;
 	view->shortcuts_inhibit = SHORTCUTS_INHIBIT_DEFAULT;
 	wl_signal_init(&view->events.unmap);
+	view->has_custom_colors = false;
+	view->custom_colors = config->border_colors;
 }
 
 void view_destroy(struct sway_view *view) {
@@ -162,6 +164,16 @@ void view_get_constraints(struct sway_view *view, double *min_width,
 		*min_height = DBL_MIN;
 		*max_height = DBL_MAX;
 	}
+}
+
+struct view_state_border_colors *view_get_color_states(struct sway_view *view) {
+	return view->has_custom_colors ?
+		&view->custom_colors :
+		&config->border_colors;
+}
+
+void view_set_custom_colors(struct sway_view *view, bool enable) {
+	view->has_custom_colors = enable;
 }
 
 uint32_t view_configure(struct sway_view *view, double lx, double ly, int width,

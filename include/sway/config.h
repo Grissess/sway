@@ -460,6 +460,16 @@ enum xwayland_mode {
 	XWAYLAND_MODE_IMMEDIATE,
 };
 
+struct view_state_border_colors {
+	struct border_colors focused;
+	struct border_colors focused_inactive;
+	struct border_colors focused_tab_title;
+	struct border_colors unfocused;
+	struct border_colors urgent;
+	struct border_colors placeholder;
+	float background[4];
+};
+
 /**
  * The configuration struct. The result of loading a config file.
  */
@@ -543,15 +553,7 @@ struct sway_config {
 	bool hide_lone_tab;
 
 	// border colors
-	struct {
-		struct border_colors focused;
-		struct border_colors focused_inactive;
-		struct border_colors focused_tab_title;
-		struct border_colors unfocused;
-		struct border_colors urgent;
-		struct border_colors placeholder;
-		float background[4];
-	} border_colors;
+	struct view_state_border_colors border_colors;
 
 	bool has_focused_tab_title;
 

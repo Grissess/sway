@@ -112,6 +112,11 @@ static const struct cmd_handler config_handlers[] = {
 static const struct cmd_handler command_handlers[] = {
 	{ "border", cmd_border },
 	{ "create_output", cmd_create_output },
+	{ "custom.focused", cmd_custom_focused },
+	{ "custom.focused_inactive", cmd_custom_focused_inactive },
+	{ "custom.unfocused", cmd_custom_unfocused },
+	{ "custom.urgent", cmd_custom_urgent },
+	{ "default_colors", cmd_default_colors },
 	{ "exit", cmd_exit },
 	{ "floating", cmd_floating },
 	{ "fullscreen", cmd_fullscreen },
