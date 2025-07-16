@@ -581,6 +581,8 @@ static void get_deco_rect(struct sway_container *c, struct wlr_box *deco_rect) {
 
 static void ipc_json_describe_view(struct sway_container *c, json_object *object) {
 	json_object_object_add(object, "pid", json_object_new_int(c->view->pid));
+	json_object_object_add(object, "seclabel",
+			c->view->seclabel ? json_object_new_string(c->view->seclabel) : NULL);
 
 	const char *app_id = view_get_app_id(c->view);
 	json_object_object_add(object, "app_id",

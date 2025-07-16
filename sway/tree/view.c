@@ -1,4 +1,6 @@
 #include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
 #include <strings.h>
 #include <wayland-server-core.h>
 #include <wlr/config.h>
@@ -37,6 +39,9 @@
 #include "sway/config.h"
 #include "sway/xdg_decoration.h"
 #include "stringop.h"
+
+// See view_populate_pid for details
+#define LABEL_MAX_SIZE 4096
 
 bool view_init(struct sway_view *view, enum sway_view_type type,
 		const struct sway_view_impl *impl) {
@@ -553,7 +558,37 @@ static void view_populate_pid(struct sway_view *view) {
 		wl_client_get_credentials(client, &pid, NULL, NULL);
 		break;
 	}
+	if (view->seclabel) {
+		free(view->seclabel);
+		view->seclabel = NULL;
+	}
 	view->pid = pid;
+
+	char *path = format_str("/proc/%d/attr/current", pid);
+	if(path) {
+		// FIXME: stat'ing this file returns st_size == 0, so we can't just use
+		// read_file_into_buf here, sadly
+		// It seems like libselinux just uses a 4k buffer, which is alright,
+		// but we cannot detect if an under-read occurred in any case,
+		// including partial reads (but it seems like the kernel won't do those
+		// anyhow)
+		view->seclabel = calloc(1, LABEL_MAX_SIZE);
+		if (view->seclabel) {
+			int fd = open(path, O_RDONLY | O_NOCTTY | O_CLOEXEC);
+			if (fd != -1) {
+				if(read(fd, view->seclabel, LABEL_MAX_SIZE - 1) == -1) {
+					free(view->seclabel);
+				}
+				close(fd);
+			} else {
+				free(view->seclabel);
+			}
+		}
+		free(path);
+	}
+	if (!view->seclabel) {
+		sway_log(SWAY_DEBUG, "Failed to get seclabel for pid %d", pid);
+	}
 }
 
 void view_assign_ctx(struct sway_view *view, struct launcher_ctx *ctx) {

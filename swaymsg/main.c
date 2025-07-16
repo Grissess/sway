@@ -335,6 +335,7 @@ static void pretty_print_tree(json_object *obj, int indent) {
 
 	if (shell != NULL) {
 		int pid = json_object_get_int(json_object_object_get(obj, "pid"));
+		const char *seclabel = json_object_get_string(json_object_object_get(obj, "seclabel"));
 		const char *app_id = json_object_get_string(json_object_object_get(obj, "app_id"));
 		json_object *window_props_obj = json_object_object_get(obj, "window_properties");
 		const char *instance = json_object_get_string(json_object_object_get(window_props_obj, "instance"));
@@ -346,6 +347,9 @@ static void pretty_print_tree(json_object *obj, int indent) {
 		const char *sandbox_instance_id = json_object_get_string(json_object_object_get(obj, "sandbox_instance_id"));
 
 		printf(" (%s, pid: %d", shell, pid);
+		if(seclabel != NULL) {
+			printf(", seclabel: \"%s\"", seclabel);
+		}
 		if (app_id != NULL) {
 			printf(", app_id: \"%s\"", app_id);
 		}

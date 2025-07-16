@@ -77,6 +77,7 @@ struct sway_view {
 	struct sway_xdg_decoration *xdg_decoration;
 
 	pid_t pid;
+	char *seclabel;
 	struct launcher_ctx *ctx;
 
 	// The size the view would want to be if it weren't tiled.

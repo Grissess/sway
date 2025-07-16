@@ -35,6 +35,7 @@ bool criteria_is_empty(struct criteria *criteria) {
 		&& !criteria->urgent
 		&& !criteria->workspace
 		&& !criteria->pid
+		&& !criteria->seclabel
 		&& !criteria->sandbox_engine
 		&& !criteria->sandbox_app_id
 		&& !criteria->sandbox_instance_id;
@@ -101,6 +102,7 @@ void criteria_destroy(struct criteria *criteria) {
 #endif
 	pattern_destroy(criteria->con_mark);
 	pattern_destroy(criteria->workspace);
+	pattern_destroy(criteria->seclabel);
 	pattern_destroy(criteria->sandbox_engine);
 	pattern_destroy(criteria->sandbox_app_id);
 	pattern_destroy(criteria->sandbox_instance_id);
@@ -451,6 +453,25 @@ static bool criteria_matches_view(struct criteria *criteria,
 		}
 	}
 
+	if (criteria->seclabel) {
+		if(!view->seclabel) {
+			return false;
+		}
+
+		switch(criteria->seclabel->match_type) {
+			case PATTERN_FOCUSED:
+				if(focused && lenient_strcmp(view->seclabel, focused->seclabel)) {
+					return false;
+				}
+				break;
+			case PATTERN_PCRE2:
+				if(!view->seclabel || regex_cmp(view->seclabel, criteria->seclabel->regex) < 0) {
+					return false;
+				}
+				break;
+		}
+	}
+
 	return true;
 }
 
@@ -541,6 +562,7 @@ enum criteria_token {
 	T_URGENT,
 	T_WORKSPACE,
 	T_PID,
+	T_SECLABEL,
 	T_SANDBOX_ENGINE,
 	T_SANDBOX_APP_ID,
 	T_SANDBOX_INSTANCE_ID,
@@ -583,6 +605,8 @@ static enum criteria_token token_from_name(char *name) {
 		return T_FLOATING;
 	} else if (strcmp(name, "pid") == 0) {
 		return T_PID;
+	} else if (strcmp(name, "seclabel") == 0) {
+		return T_SECLABEL;
 	} else if (strcmp(name, "sandbox_engine") == 0) {
 		return T_SANDBOX_ENGINE;
 	} else if (strcmp(name, "sandbox_app_id") == 0) {
@@ -690,6 +714,9 @@ static bool parse_token(struct criteria *criteria, char *name, char *value) {
 		if (*endptr != 0) {
 			error = strdup("The value for 'pid' should be numeric");
 		}
+		break;
+	case T_SECLABEL:
+		pattern_create(&criteria->seclabel, value);
 		break;
 	case T_SANDBOX_ENGINE:
 		pattern_create(&criteria->sandbox_engine, value);

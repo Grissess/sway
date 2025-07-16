@@ -1054,6 +1054,12 @@ The following attributes may be matched with:
 *pid*
 	Compare value against the window's process ID. Must be numeric.
 
+*seclabel*
+	Compare value against the window's process security label (sometimes also
+	called "security context"). The meaning of this depends on what Linux
+	Security Module you're using, if any. If the value is \_\_focused\_\_,
+	then the label must match that of the currently focused window.
+
 *shell*
 	Compare value against the window shell, such as "xdg_shell" or "xwayland".
 	Can be a regular expression. If value is \_\_focused\_\_, then the shell
